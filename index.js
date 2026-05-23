@@ -36,6 +36,11 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                         inline: true
                     },
                     {
+                        name: 'Role',
+                        value: member.roles.highest.name,
+                        inline: true
+                    },
+                    {
                         name: 'Channel',
                         value: newState.channel.name,
                         inline: true
