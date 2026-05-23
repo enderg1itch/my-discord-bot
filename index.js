@@ -9,51 +9,49 @@ const client = new Client({
 });
 
 const LOG_CHANNEL_ID = '1506663388351037462';
-const WATCH_VC_IDS = [
-    '1498273935685582889',
-    '1499171922557276160',
-    '1507783041412501606'
-];
+
+client.once('ready', () => {
+    console.log(`Logged in as ${client.user.tag}`);
+});
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
 
-    if (!oldState.channelId && WATCH_VC_IDS.includes(newState.channelId)) {
+    // Trigger when user joins ANY voice or stage channel
+    if (!oldState.channelId && newState.channelId) {
 
-        const channel = await client.channels.fetch(LOG_CHANNEL_ID);
-        const member = newState.member;
+        try {
+            const channel = await client.channels.fetch(LOG_CHANNEL_ID);
+            if (!channel) return;
 
-        if (member.user.bot) return;
+            const member = newState.member;
+            if (!member || member.user.bot) return;
 
-        const embed = new EmbedBuilder()
-            .setColor('#a855f7')
-            .setTitle('🎙️ Member Joined Voice Channel')
-            .addFields(
-                {
-                    name: 'Member',
-                    value: `${member}`,
-                    inline: true
-                },
-                {
-                    name: 'Role',
-                    value: member.roles.highest.name,
-                    inline: true
-                },
-                {
-                    name: 'Channel',
-                    value: newState.channel.name,
-                    inline: true
-                }
-            )
-            .setThumbnail(member.user.displayAvatarURL())
-            .setFooter({
-                text: `User ID: ${member.id}`
-            })
-            .setTimestamp();
+            const embed = new EmbedBuilder()
+                .setColor('#a855f7')
+                .setTitle('🎙️ Voice Channel Joined')
+                .addFields(
+                    {
+                        name: 'Member',
+                        value: `${member}`,
+                        inline: true
+                    },
+                    {
+                        name: 'Channel',
+                        value: newState.channel.name,
+                        inline: true
+                    }
+                )
+                .setThumbnail(member.user.displayAvatarURL())
+                .setTimestamp();
 
-        channel.send({
-            content: '@everyone',
-            embeds: [embed]
-        });
+            channel.send({
+                content: '@everyone',
+                embeds: [embed]
+            });
+
+        } catch (err) {
+            console.log('Error:', err);
+        }
     }
 });
 
