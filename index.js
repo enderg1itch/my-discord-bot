@@ -8,14 +8,15 @@ const client = new Client({
   ],
 });
 
-client.once("ready", () => {
+client.on("ready", () => {
+  console.log("Bot is online");
   console.log(`Logged in as ${client.user.tag}`);
 });
 
 client.on("messageCreate", (message) => {
   if (message.author.bot) return;
 
-  if (message.content.toLowerCase() === "ping") {
+  if (message.content === "ping") {
     message.reply("pong");
   }
 });
