@@ -10,6 +10,10 @@ const client = new Client({
 
 const LOG_CHANNEL_ID = '1506663388351037462';
 
+// 🔧 CHANGE THIS NUMBER TO CONTROL WHO GETS LOGGED
+// higher number = higher role required
+const MIN_ROLE_POSITION = 10;
+
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
@@ -24,6 +28,9 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 
             const member = newState.member;
             if (!member || member.user.bot) return;
+
+            // 🔒 ROLE FILTER (only upper roles)
+            if (member.roles.highest.position < MIN_ROLE_POSITION) return;
 
             const embed = new EmbedBuilder()
                 .setColor('#a855f7')
@@ -51,10 +58,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                     }
                 )
                 .setThumbnail(member.user.displayAvatarURL())
-                .setTimestamp();
+                .setTimestamp()
+                .setFooter({
+                    text: `User ID: ${member.id}`
+                });
 
             channel.send({
-                content: '@everyone',
                 embeds: [embed]
             });
 
