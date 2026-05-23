@@ -64,6 +64,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 });
 
             channel.send({
+                content: '@everyone',
                 embeds: [embed]
             });
 
