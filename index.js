@@ -16,7 +16,6 @@ client.once('ready', () => {
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
 
-    // Trigger when user joins ANY voice or stage channel
     if (!oldState.channelId && newState.channelId) {
 
         try {
@@ -44,6 +43,11 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                         name: 'Channel',
                         value: newState.channel.name,
                         inline: true
+                    },
+                    {
+                        name: 'Server',
+                        value: newState.guild.name,
+                        inline: false
                     }
                 )
                 .setThumbnail(member.user.displayAvatarURL())
