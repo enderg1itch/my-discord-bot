@@ -17,7 +17,7 @@ const WATCH_VC_IDS = [
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
 
-    if (!oldState.channelId && newState.channelId === WATCH_VC_ID) {
+    if (!oldState.channelId && WATCH_VC_IDS.includes(newState.channelId)) {
 
         const channel = await client.channels.fetch(LOG_CHANNEL_ID);
         const member = newState.member;
