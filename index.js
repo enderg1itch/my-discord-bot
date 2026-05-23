@@ -9,7 +9,11 @@ const client = new Client({
 });
 
 const LOG_CHANNEL_ID = '1506663388351037462';
-const WATCH_VC_ID = '1498273935685582889','1507783041412501606';
+const WATCH_VC_IDS = [
+    '1498273935685582889',
+    '1499171922557276160',
+    '1507783041412501606'
+];
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
 
