@@ -1,24 +1,56 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ],
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMembers
+    ]
 });
 
-client.on("ready", () => {
-  console.log("Bot is online");
-  console.log(`Logged in as ${client.user.tag}`);
-});
+const LOG_CHANNEL_ID = '1506663388351037462';
+const WATCH_VC_ID = '1498273935685582889';
 
-client.on("messageCreate", (message) => {
-  if (message.author.bot) return;
+client.on('voiceStateUpdate', async (oldState, newState) => {
 
-  if (message.content === "ping") {
-    message.reply("pong");
-  }
+    if (!oldState.channelId && newState.channelId === WATCH_VC_ID) {
+
+        const channel = await client.channels.fetch(LOG_CHANNEL_ID);
+        const member = newState.member;
+
+        if (member.user.bot) return;
+
+        const embed = new EmbedBuilder()
+            .setColor('#a855f7')
+            .setTitle('🎙️ Member Joined Voice Channel')
+            .addFields(
+                {
+                    name: 'Member',
+                    value: `${member}`,
+                    inline: true
+                },
+                {
+                    name: 'Role',
+                    value: member.roles.highest.name,
+                    inline: true
+                },
+                {
+                    name: 'Channel',
+                    value: newState.channel.name,
+                    inline: true
+                }
+            )
+            .setThumbnail(member.user.displayAvatarURL())
+            .setFooter({
+                text: `User ID: ${member.id}`
+            })
+            .setTimestamp();
+
+        channel.send({
+            content: '@everyone',
+            embeds: [embed]
+        });
+    }
 });
 
 client.login(process.env.TOKEN);
